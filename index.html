@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
+    <video controls width="250"></video>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // A $( document ).ready() block.
+      $(document).ready(function() {
+        // Put variables in global scope to make them available to the browser console.
+        var video = document.querySelector("video");
+        var constraints = (window.constraints = {
+          audio: false,
+          video: true
+        });
+        var errorElement = document.querySelector("#errorMsg");
+
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then(function(stream) {
+            var videoTracks = stream.getVideoTracks();
+            console.log("Got stream with constraints:", constraints);
+            console.log("Using video device: " + videoTracks[0].label);
+            stream.onremovetrack = function() {
+              console.log("Stream ended");
+            };
+            window.stream = stream; // make variable available to browser console
+            video.srcObject = stream;
+          })
+          .catch(function(error) {
+            if (error.name === "ConstraintNotSatisfiedError") {
+              errorMsg(
+                "The resolution " +
+                  constraints.video.width.exact +
+                  "x" +
+                  constraints.video.width.exact +
+                  " px is not supported by your device."
+              );
+            } else if (error.name === "PermissionDeniedError") {
+              errorMsg(
+                "Permissions have not been granted to use your camera and " +
+                  "microphone, you need to allow the page access to your devices in " +
+                  "order for the demo to work."
+              );
+            }
+            errorMsg("getUserMedia error: " + error.name, error);
+          });
+
+        function errorMsg(msg, error) {
+          errorElement.innerHTML += "<p>" + msg + "</p>";
+          if (typeof error !== "undefined") {
+            console.error(error);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
